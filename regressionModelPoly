@@ -58,5 +58,34 @@ pY <- pX%*%b
 pXpY <- cbind(x1,pY)
 XY <- cbind(x1,y)
 pXpY
-plot(pXpY)
-plot(XY)
+plot(XY,pch=1,col=1)
+points(pXpY,pch=2,col=2)
+# Sol: Transform the cubic model to multiple variables; x -> x1, x^2 -> x2
+# Rewrite the data as
+#   x1 0 1 2  3  4   5   6  ## x1 = x
+#   x2 0 1 4  9 16  25  36  ## x2 = x^2
+#    y 1 4 5  3  2   3   4
+# Solve b = Inverse(X'X)%*%X'y
+
+#y <- c(1,4,5,3,2,3,4)
+#x1 <- c(0,1,2,3,4,5,6)
+#d1 <- cbind(x1,y)
+#x2 <- x1^2
+#x2
+#[1]  0  1  4  9 16 25 36
+d2XX1 <- c(length(y),sum(x1),sum(x2))
+d2XX2 <- c(sum(x1),sum(x1*x1),sum(x1*x2))
+d2XX3 <- c(sum(x2),sum(x2*x1),sum(x2*x2))
+d2XX <- rbind(d2XX1,d2XX2,d2XX3)
+d2XX
+
+d2XXi <- solve(d2XX)
+d2XXi
+d2Xy <- c(sum(y),sum(x1*y),sum(x2*y))
+d2Xy
+d2b <- d2XXi%*%d2Xy
+d2b
+d2pX <- cbind(x0,x1,x2)
+d2pY <- d2pX%*%d2b
+d2pXpY <- cbind(x1,d2pY)
+points(d2pXpY,pch=3,col=3)
