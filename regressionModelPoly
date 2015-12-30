@@ -1,0 +1,62 @@
+#12.10 The following data are given:
+#  x 0 1 2 3 4 5 6
+#  y 1 4 5 3 2 3 4
+# (a) Fit the cubic model μY |x = β0 +β1x+β2x^2 +β3x^3.
+# (b) Predict Y when x = 2.
+
+# Sol: Transform the cubic model to multiple variables; x -> x1, x^2 -> x2, x^3 -> x3
+# Rewrite the data as
+#   x1 0 1 2  3  4   5   6  ## x1 = x
+#   x2 0 1 4  9 16  25  36  ## x2 = x^2
+#   x3 0 1 8 27 64 125 216  ## x3 = x^3
+#    y 1 4 5  3  2   3   4
+# Solve b = Inverse(X'X)%*%X'y
+
+y <- c(1,4,5,3,2,3,4)
+x1 <- c(0,1,2,3,4,5,6)
+x2 <- x1^2
+x2
+#[1]  0  1  4  9 16 25 36
+x3 <- x1^3
+x3
+#[1]   0   1   8  27  64 125 216
+XX1 <- c(length(y),sum(x1),sum(x2),sum(x3))
+XX2 <- c(sum(x1),sum(x1*x1),sum(x1*x2),sum(x1*x3))
+XX3 <- c(sum(x2),sum(x2*x1),sum(x2*x2),sum(x2*x3))
+XX4 <- c(sum(x3),sum(x3*x1),sum(x3*x2),sum(x3*x3))
+XX <- rbind(XX1,XX2,XX3,XX4)
+XX
+#[,1] [,2]  [,3]  [,4]
+#XX1    7   21    91   441
+#XX2   21   91   441  2275
+#XX3   91  441  2275 12201
+#XX4  441 2275 12201 67171
+
+XXi <- solve(XX)
+XXi
+#             XX1         XX2         XX3         XX4
+#[1,]  0.92857143 -1.01984127  0.30952381 -0.02777778
+#[2,] -1.01984127  2.31613757 -0.90476190  0.09259259
+#[3,]  0.30952381 -0.90476190  0.38690476 -0.04166667
+#[4,] -0.02777778  0.09259259 -0.04166667  0.00462963
+Xy <- c(sum(y),sum(x1*y),sum(x2*y),sum(x3*y))
+Xy
+#[1]   22   70  302 1492
+b <- XXi%*%Xy
+b
+#[,1]
+#[1,]  1.0714286
+#[2,]  4.6031746
+#[3,] -1.8452381
+#[4,]  0.1944444
+py <- sum(b*px)
+py
+#[1] 4.452381
+x0 <- c(1,1,1,1,1,1,1)
+pX <- cbind(x0,x1,x2,x3)
+pY <- pX%*%b
+pXpY <- cbind(x1,pY)
+XY <- cbind(x1,y)
+pXpY
+plot(pXpY)
+plot(XY)
