@@ -1,0 +1,87 @@
+head(iris,5)
+mean(iris$Sepal.Length)
+round(mean(iris$Sepal.Length),2)
+# Use attach to create the link with iris, thus no need to set the data set prefix
+attach(iris)
+round(mean(Sepal.Length),2)
+summary(iris)
+# Plot
+plot(Sepal.Length,Sepal.Width) # Plot the scatter chart with two variables
+plot(Species)   # Plot the Bar chart 
+plot(Species, Sepal.Length) # Box plot
+plot(Species,Petal.Length) # Box plot by Petal Length
+# Matrix of the scatter chart
+plot(iris)
+# From the Matrix scatter plot
+# Get (1) linear realtion - petal.length & petal.widthe
+#     (2) dinstinction of species 1 & 3 by the petal.length & the petal.width
+plot(Petal.Length,Species) # x axis : lenght ; y axis : species
+plot(Species,Petal.Width)  # x axis : species; y axis : length
+# plot with more arguments & add the point and the legend by layer
+# main - the chart name
+# pch -> point type; assign by number
+# col -> point color, assign by number or color ("black","red","green","blue"..)
+# xlim,ylim; the range of x axis & y axis
+# xlab, ylab; the lable of the x axis & y axis
+# points - add the point by layer
+# legend - add the point by layer
+plot(Petal.Length[Species=="setosa"],Petal.Width[Species=="setosa"],pch=1,col=1,xlim=c(1,7),ylim=c(0,3),main = "Scatter-PLenth & PWidth",xlab ="PLen" ,ylab = "PWid")
+points(Petal.Length[Species=="versicolor"],Petal.Width[Species=="versicolor"],pch=2,col=2)
+points(Petal.Length[Species=="virginica"],Petal.Width[Species=="virginica"],pch=3,col="blue")
+legend(1.5,3,legend = c("setosa","versicolor","virginica"),col=c(1,2,3),pch = c(1,2,3))
+
+# Test of the normal distributio
+# sample to test if these four measuremens according normal distribution
+
+# Shapiro-Wilk test
+shapiro.test(Sepal.Length)
+shapiro.test(Sepal.Width)
+shapiro.test(Petal.Length)
+shapiro.test(Petal.Width)
+# Shapiro-Wilk test by the Species group
+rs1 <- with(iris, tapply(Sepal.Length, Species, shapiro.test))
+rs2 <- with(iris, tapply(Sepal.Width, Species, shapiro.test))
+rs3 <- with(iris, tapply(Petal.Length, Species, shapiro.test))
+rs4 <- with(iris, tapply(Petal.Width, Species, shapiro.test))
+
+# Anderson-Darling test
+library(nortest)
+ad.test(Sepal.Length)
+ad.test(Sepal.Width)
+ad.test(Petal.Length)
+ad.test(Petal.Width)
+
+# Anderson-Darling test by the Species group
+ra1 <- with(iris, tapply(Sepal.Length, Species, ad.test))
+ra2 <- with(iris, tapply(Sepal.Width, Species, ad.test))
+ra3 <- with(iris, tapply(Petal.Length, Species, ad.test))
+ra4 <- with(iris, tapply(Petal.Width, Species, ad.test))
+# Compare consistence of the shapiro.test & the ad.test; 
+nt_l <- c("rs1","rs2","rs3","rs4","ra1","ra2","ra3","ra4")
+
+
+# Decision tree
+n=0.1*nrow(iris)
+test.index=sample(1:nrow(iris),n)
+iris.train=iris[-test.index,]
+iris.test=iris[test.index,]
+library(tree)
+iris.tree=tree(Species ~ .,data=iris.train)
+iris.tree
+plot(iris.tree)
+text(iris.tree)
+
+
+#Random Forest
+library(randomForest)
+set.seed(777)
+iris.rf=randomForest(Species ~.,data=iris.train,importane=T,proximity=T)
+print(iris.rf)
+round(importance(iris.rf),2)
+names(iris.rf)
+(table.rf=iris.rf$confusion)
+sum(diag(table.rf)/sum(table.rf))
+#predict
+(rf.pred=predict(iris.rf,newdata=iris.test))
+(table.test=table(Species=species.test,Predicted=rf.pred))
+sum(diag(table.test)/sum(table.test))
