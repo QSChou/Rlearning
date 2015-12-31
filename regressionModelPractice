@@ -101,3 +101,17 @@ points(Z4pXpY,pch=4,col=4,type = "b")
 
 # Add the legend
 legend(4,5,legend = c("SampleData","Z1","Z2","Z3","Z4"),col=c(6,1,2,3,4),pch = c(6,1,2,3,4))
+
+# Verify the Coefficents result with the result by lm()
+# Translate the list to a data frame
+ds1 <- data.frame(cbind(y,x1,x2,x3,x4))
+attach(ds1)
+
+fit1 <- lm(y~x1)
+fit1   #The coefficient is to compare with Z1b
+fit2 <- lm(y~x1+x2)
+fit2   #The coefficient is to compare with Z2b   
+fit3 <- lm(y~x1+x2+x3)
+fit3   #The coefficient is to compare with Z3b
+fit4 <- lm(y~x1+x2+x3+x4)
+fit4 #The coefficient is to compare with Z4b
