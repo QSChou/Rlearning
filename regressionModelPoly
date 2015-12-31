@@ -4,6 +4,41 @@
 # (a) Fit the cubic model μY |x = β0 +β1x+β2x^2 +β3x^3.
 # (b) Predict Y when x = 2.
 
+
+# Input the data
+y <- c(1,4,5,3,2,3,4)
+x0 <- c(1,1,1,1,1,1,1)
+x1 <- c(0,1,2,3,4,5,6)
+x2 <- x1^2
+x3 <- x1^3
+x4 <- x1^4
+XY <- cbind(x1,y)
+# Sol: Transform the quartic model to multiple variables; x -> x1, x^2 -> x2, x^3 -> x3, x^4 -> x4
+# Rewrite the data as
+#   x1 0 1  2  3   4   5    6  ## x1 = x
+#   x2 0 1  4  9  16  25   36  ## x2 = x^2
+#   x3 0 1  8 27  64 125  216  ## x3 = x^3
+#   x4 0 1 16 81 256 625 1296  ## x4 = x^4
+#    y 1 4  5  3   2   3   4
+# Solve b = Inverse(X'X)%*%X'y
+
+Z4XX1 <- c(length(y),sum(x1),sum(x2),sum(x3),sum(x4))
+Z4XX2 <- c(sum(x1),sum(x1*x1),sum(x1*x2),sum(x1*x3),sum(x1*x4))
+Z4XX3 <- c(sum(x2),sum(x2*x1),sum(x2*x2),sum(x2*x3),sum(x2*x4))
+Z4XX4 <- c(sum(x3),sum(x3*x1),sum(x3*x2),sum(x3*x3),sum(x3*x4))
+Z4XX5 <- c(sum(x4),sum(x4*x1),sum(x4*x2),sum(x4*x3),sum(x4*x4))
+Z4XX <- rbind(Z4XX1,Z4XX2,Z4XX3,Z4XX4,Z4XX5)
+Z4XX
+Z4XXi <- solve(Z4XX)
+Z4XXi
+Z4Xy <- c(sum(y),sum(x1*y),sum(x2*y),sum(x3*y),sum(x4*y))
+Z4Xy
+Z4b <- Z4XXi%*%Z4Xy
+Z4b
+Z4pX <- cbind(x0,x1,x2,x3,x4)
+Z4pY <- Z4pX%*%Z4b
+Z4pXpY <- cbind(x1,Z4pY)
+
 # Sol: Transform the cubic model to multiple variables; x -> x1, x^2 -> x2, x^3 -> x3
 # Rewrite the data as
 #   x1 0 1 2  3  4   5   6  ## x1 = x
@@ -11,81 +46,58 @@
 #   x3 0 1 8 27 64 125 216  ## x3 = x^3
 #    y 1 4 5  3  2   3   4
 # Solve b = Inverse(X'X)%*%X'y
+Z3XX1 <- c(length(y),sum(x1),sum(x2),sum(x3))
+Z3XX2 <- c(sum(x1),sum(x1*x1),sum(x1*x2),sum(x1*x3))
+Z3XX3 <- c(sum(x2),sum(x2*x1),sum(x2*x2),sum(x2*x3))
+Z3XX4 <- c(sum(x3),sum(x3*x1),sum(x3*x2),sum(x3*x3))
+Z3XX <- rbind(Z3XX1,Z3XX2,Z3XX3,Z3XX4)
+Z3XXi <- solve(Z3XX)
+Z3Xy <- c(sum(y),sum(x1*y),sum(x2*y),sum(x3*y))
+Z3b <- Z3XXi%*%Z3Xy
+Z3pX <- cbind(x0,x1,x2,x3)
+Z3pY <- Z3pX%*%Z3b
+Z3pXpY <- cbind(x1,Z3pY)
 
-y <- c(1,4,5,3,2,3,4)
-x1 <- c(0,1,2,3,4,5,6)
-x2 <- x1^2
-x2
-#[1]  0  1  4  9 16 25 36
-x3 <- x1^3
-x3
-#[1]   0   1   8  27  64 125 216
-XX1 <- c(length(y),sum(x1),sum(x2),sum(x3))
-XX2 <- c(sum(x1),sum(x1*x1),sum(x1*x2),sum(x1*x3))
-XX3 <- c(sum(x2),sum(x2*x1),sum(x2*x2),sum(x2*x3))
-XX4 <- c(sum(x3),sum(x3*x1),sum(x3*x2),sum(x3*x3))
-XX <- rbind(XX1,XX2,XX3,XX4)
-XX
-#[,1] [,2]  [,3]  [,4]
-#XX1    7   21    91   441
-#XX2   21   91   441  2275
-#XX3   91  441  2275 12201
-#XX4  441 2275 12201 67171
-
-XXi <- solve(XX)
-XXi
-#             XX1         XX2         XX3         XX4
-#[1,]  0.92857143 -1.01984127  0.30952381 -0.02777778
-#[2,] -1.01984127  2.31613757 -0.90476190  0.09259259
-#[3,]  0.30952381 -0.90476190  0.38690476 -0.04166667
-#[4,] -0.02777778  0.09259259 -0.04166667  0.00462963
-Xy <- c(sum(y),sum(x1*y),sum(x2*y),sum(x3*y))
-Xy
-#[1]   22   70  302 1492
-b <- XXi%*%Xy
-b
-#[,1]
-#[1,]  1.0714286
-#[2,]  4.6031746
-#[3,] -1.8452381
-#[4,]  0.1944444
-py <- sum(b*px)
-py
-#[1] 4.452381
-x0 <- c(1,1,1,1,1,1,1)
-pX <- cbind(x0,x1,x2,x3)
-pY <- pX%*%b
-pXpY <- cbind(x1,pY)
-XY <- cbind(x1,y)
-pXpY
-plot(XY,pch=1,col=1)
-points(pXpY,pch=2,col=2)
-# Sol: Transform the cubic model to multiple variables; x -> x1, x^2 -> x2
+# Sol: Transform the quadratic model to multiple variables; x -> x1, x^2 -> x2
 # Rewrite the data as
 #   x1 0 1 2  3  4   5   6  ## x1 = x
 #   x2 0 1 4  9 16  25  36  ## x2 = x^2
 #    y 1 4 5  3  2   3   4
 # Solve b = Inverse(X'X)%*%X'y
 
-#y <- c(1,4,5,3,2,3,4)
-#x1 <- c(0,1,2,3,4,5,6)
-#d1 <- cbind(x1,y)
-#x2 <- x1^2
-#x2
-#[1]  0  1  4  9 16 25 36
-d2XX1 <- c(length(y),sum(x1),sum(x2))
-d2XX2 <- c(sum(x1),sum(x1*x1),sum(x1*x2))
-d2XX3 <- c(sum(x2),sum(x2*x1),sum(x2*x2))
-d2XX <- rbind(d2XX1,d2XX2,d2XX3)
-d2XX
+Z2XX1 <- c(length(y),sum(x1),sum(x2))
+Z2XX2 <- c(sum(x1),sum(x1*x1),sum(x1*x2))
+Z2XX3 <- c(sum(x2),sum(x2*x1),sum(x2*x2))
+Z2XX <- rbind(Z2XX1,Z2XX2,Z2XX3)
+Z2XXi <- solve(Z2XX)
+Z2Xy <- c(sum(y),sum(x1*y),sum(x2*y))
+Z2b <- Z2XXi%*%Z2Xy
+Z2pX <- cbind(x0,x1,x2)
+Z2pY <- Z2pX%*%Z2b
+Z2pXpY <- cbind(x1,Z2pY)
 
-d2XXi <- solve(d2XX)
-d2XXi
-d2Xy <- c(sum(y),sum(x1*y),sum(x2*y))
-d2Xy
-d2b <- d2XXi%*%d2Xy
-d2b
-d2pX <- cbind(x0,x1,x2)
-d2pY <- d2pX%*%d2b
-d2pXpY <- cbind(x1,d2pY)
-points(d2pXpY,pch=3,col=3)
+# Sol: Transform the linear model to single variables; x -> x1
+# Rewrite the data as
+#   x1 0 1 2  3  4   5   6  ## x1 = x
+#    y 1 4 5  3  2   3   4
+# Solve b = Inverse(X'X)%*%X'y
+Z1XX1 <- c(length(y),sum(x1))
+Z1XX2 <- c(sum(x1),sum(x1*x1))
+Z1XX <- rbind(Z1XX1,Z1XX2)
+
+Z1XXi <- solve(Z1XX)
+Z1Xy <- c(sum(y),sum(x1*y))
+Z1b <- Z1XXi%*%Z1Xy
+Z1pX <- cbind(x0,x1)
+Z1pY <- Z1pX%*%Z1b
+Z1pXpY <- cbind(x1,Z1pY)
+
+# Plot
+plot(XY,pch=6,col=6,type = "b")
+points(Z1pXpY,pch=1,col=1,type = "b")
+points(Z2pXpY,pch=2,col=2,type = "b")
+points(Z3pXpY,pch=3,col=3,type = "b")
+points(Z4pXpY,pch=4,col=4,type = "b")
+
+# Add the legend
+legend(4,5,legend = c("SampleData","Z1","Z2","Z3","Z4"),col=c(6,1,2,3,4),pch = c(6,1,2,3,4))
