@@ -1,0 +1,39 @@
+# Use the iris data to validate the residuals 
+attach(iris)
+# liear mode y=b0+b1*x
+fit1 <- lm(Sepal.Length~Sepal.Width) 
+# In case of non-linear model w/df=2 (y=b0+b1*x+b2*x^2)
+iris$Sepal.Width2 <- iris$Sepal.Width^2
+fit2 <- lm(Sepal.Length~Sepal.Width+Sepal.Width2)
+
+# In case of non-linear model w//df=3 y=b0+b1*x+b2*x^2+b3*x^3
+iris$Sepal.Width3 <- iris$Sepal.Width^3
+fit3 <- lm(Sepal.Length~Sepal.Width+Sepal.Width2+Sepal.Width3)
+
+# In case of non-linear model w//df=4 y=b0+b1*x+b2*x^2+b3*x^3+b4*x^4
+iris$Sepal.Width4 <- iris$Sepal.Width^4
+fit4 <- lm(Sepal.Length~Sepal.Width+Sepal.Width2+Sepal.Width3+Sepal.Width4)
+
+#par(mfrow=c(5,1))
+plot(Sepal.Width,Sepal.Length)
+curve(fit1$coefficients[1]+fit1$coefficients[2]*x,col="blue",pch=1,add=TRUE)
+curve(fit2$coefficients[1]+fit2$coefficients[2]*x+fit2$coefficients[3]*x^2,2,5,col="green",pch=2,add = TRUE)
+curve(fit3$coefficients[1]+fit3$coefficients[2]*x+fit3$coefficients[3]*x^2+fit3$coefficients[4]*x^3,2,5,col="red",pch=3,add = TRUE)
+curve(fit4$coefficients[1]+fit4$coefficients[2]*x+fit4$coefficients[3]*x^2+fit4$coefficients[4]*x^3+fit4$coefficients[5]*x^4,2,5,col="orange",pch=4,add = TRUE)
+legend(4,8,legend = c("DF=1","DF=2","DF=3","DF=4"),col=c("blue","green","red","orange"),pch=c(1,2,3,4))
+par(mfrow=c(4,1))
+plot(fit1$residuals,col="RED")
+curve(x*mean(fit1$residuals),add=TRUE,col="blue")
+curve(x*sum(fit1$residuals),add=TRUE,col="yellow")
+# Plot the residuals of fit2 (2 degrees)
+plot(fit2$residuals,col="RED")
+curve(x*mean(fit2$residuals),add=TRUE,col="blue")
+curve(x*sum(fit2$residuals),add=TRUE,col="yellow")
+# Plot the residuals of fit3 (df=3)
+plot(fit3$residuals,col="RED")
+curve(x*mean(fit3$residuals),add=TRUE,col="blue")
+curve(x*sum(fit3$residuals),add=TRUE,col="yellow")
+# Plot the residuals of fit4 (df=4)
+plot(fit4$residuals,col="RED")
+curve(x*mean(fit4$residuals),add=TRUE,col="blue")
+curve(x*sum(fit4$residuals),add=TRUE,col="yellow")
