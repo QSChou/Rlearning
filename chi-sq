@@ -1,0 +1,15 @@
+
+# code cited from https://stat.ethz.ch/pipermail/r-help/2008-October/178070.html
+par(mfrow=c(2,1))
+x <- rchisq(100,5)
+
+hist(x,prob=TRUE)
+curve( dchisq(x, df=5), col='green', add=TRUE)
+curve( dchisq(x, df=10), col='red', add=TRUE )
+
+x <- rchisq(100,5)
+#x <- x[sort.list(x)]
+hist(x,prob=TRUE)
+curve( dchisq(x, df=5), col='green', add=TRUE)
+curve( dchisq(x, df=10), col='red', add=TRUE )
+linns(density(x), col = 'yellow')
