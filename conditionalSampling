@@ -1,0 +1,13 @@
+set.seed(123)
+
+x <- rnorm(50)
+
+doit <- function(x) {
+  x <- sample(x,replace = T)
+  ux <-unique(x)
+  if(length(ux) > 30) mx <- mean(x)
+  else {stop(list("Unique points: ",length(ux),", too few unique points!"))}
+  return(list(x,mx,c(length(ux),"unique points!")))
+}
+
+res <- lapply(1:10, function(i) try(doit(x),TRUE))
