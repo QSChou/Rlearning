@@ -1,0 +1,30 @@
+setwd("d:/userdata/R/data")
+
+df <- read.csv("dftest.csv", header = TRUE)
+
+lst_date <- levels(df$ST_DATE)
+
+for(i in 1:length(lst_date)) {
+    #assign(paste("st",lst_date[i],sep="_"),subset(df,ST_DATE==lst_date[i]))
+  assign(lst_date[i],subset(df,ST_DATE==lst_date[i]))
+  #lds[i] <- lst_date[i]
+}
+
+# Below script uses t.test for two sets to check similarity
+for(i in 1:length(lst_date)) {
+  x = subset(df[,4:6],ST_DATE==lst_date[i])
+  if (nrow(x) > 1) { 
+    for (j in 1:length(lst_date)) {
+        if (i != j) {
+          y = subset(df[,4:6],ST_DATE==lst_date[j])
+          if (nrow(y) >2) {
+            tres <- t.test(x$CT,y$CT,paired = FALSE,var.equal = T)
+            assign(paste("tres",lst_date[i],lst_date[j],sep = "_"),tres)
+            if (as.numeric(tres$p.value) >= 0.5) {
+              print(paste("tres",lst_date[i],lst_date[j],"p_value",tres$p.value,sep = "_"))
+            }
+          }
+        }
+    }
+  }
+}
