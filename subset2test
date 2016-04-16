@@ -14,16 +14,14 @@ for(i in 1:length(lst_date)) {
 for(i in 1:length(lst_date)) {
   x = subset(df[,4:6],ST_DATE==lst_date[i])
   if (nrow(x) > 1) { 
-    for (j in 1:length(lst_date)) {
-        if (i != j) {
-          y = subset(df[,4:6],ST_DATE==lst_date[j])
-          if (nrow(y) >2) {
+    for (j in i+1:length(lst_date)) { # pair (m.n) & (n.m) only (m,n) is needed for test
+        y = subset(df[,4:6],ST_DATE==lst_date[j])
+        if (nrow(y) >2) {
             tres <- t.test(x$CT,y$CT,paired = FALSE,var.equal = T)
             assign(paste("tres",lst_date[i],lst_date[j],sep = "_"),tres)
             if (as.numeric(tres$p.value) >= 0.5) {
               print(paste("tres",lst_date[i],lst_date[j],"p_value",tres$p.value,sep = "_"))
             }
-          }
         }
     }
   }
