@@ -85,3 +85,28 @@ sum(diag(table.rf)/sum(table.rf))
 (rf.pred=predict(iris.rf,newdata=iris.test))
 (table.test=table(Species=species.test,Predicted=rf.pred))
 sum(diag(table.test)/sum(table.test))
+
+
+attach(iris)
+## Normality test for the data set; 
+par(mfrow = c(4,4))
+for (j in 1:4) {
+  dx <- iris[,j]
+  ntx <- shapiro.test(dx)
+  xtext <- paste("W",ntx[1],"p-value",ntx[2])
+  hist(dx,breaks = seq(floor(min(dx)),ceiling(max(dx)),0.1),prob = T, main = paste("Histogram of",names(iris)[j]),xlab = xtext)
+  for(i in 1:length(levels(iris$Species))) {
+    Spec <- levels(iris$Species)[i]
+    dy <-iris[iris$Species == Spec,j]
+    nty <- shapiro.test(dy)
+    xtext <- paste("W",nty[1],"p-value",nty[2])
+    hist(dy,breaks = seq(floor(min(dy)),ceiling(max(dy)),0.1),prob = T, main = paste("Histogram of subset",Spec),xlab = xtext)
+  }
+  
+  ## pairwise t-test
+  pwtest <- pairwise.t.test(iris[,j],iris[,5],pool.sd = T)
+  print(names(iris)[j])
+  print(pwtest)
+}
+
+
