@@ -37,3 +37,43 @@ curve(x*sum(fit3$residuals),add=TRUE,col="yellow")
 plot(fit4$residuals,col="RED")
 curve(x*mean(fit4$residuals),add=TRUE,col="blue")
 curve(x*sum(fit4$residuals),add=TRUE,col="yellow")
+
+
+## pariwise scatter chart, cor, cov & regression for multiple x 
+par(mfrow = c(2,2))
+xn <- dim(iris)[2]-1
+coln <- colnames(iris)
+vl <- c()
+vl$cor <- c()
+vl$reg <- c()
+vnamel <- c()
+for (i in 1:xn) {
+  k <- i+1
+  repeat {
+      if(k>xn) break
+      lb <- paste(coln[i],coln[k],sep = "-")
+      bi_dx <- iris[,c(i,k)]
+      
+      vname <- paste(lb,"cor",sep = "-")
+      vnamel <- c(vnamel,vname)
+     # assign(vname,cor(bi_dx[,1],bi_dx[,2]))
+      vl$cor <- c(vl$cor, c(paste(lb,"cor",sep = "-") , cor(bi_dx[,1],bi_dx[,2])))
+      lmr <- lm(bi_dx[,1]~bi_dx[,2])
+      vl$reg <- c(vl$reg,c(paste(lb,"lm",sep = "-"),lmr))
+      plot(lmr,main = paste(vname,sd(lmr$residuals),sep = ","))
+      k <- k+1
+    }
+}
+
+pairs(~Sepal.Length+Sepal.Width+Petal.Length+Petal.Width,data=iris)
+
+
+
+
+
+
+
+
+
+
+
