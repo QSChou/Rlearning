@@ -1,0 +1,26 @@
+## Reference: http://henning.kropponline.de/2014/07/13/hive-r/
+
+library(DBI)
+library(rJava)
+library(RJDBC)
+
+cp = c("d:/Program/hdp-lib/hive-jdbc.jar", 
+       "d:/Program/hdp-lib/hadoop-common.jar")
+.jinit(classpath=cp) 
+#.jinit()
+#for(l in list.files('d:/Program/hdp-lib')) {
+#  print(l)
+#  .jaddClassPath(paste("d:/Program/hdp-lib",l,sep=""))
+#  print(.jclassPath())
+#  }
+.jclassPath()
+
+drv <- JDBC("org.apache.hive.jdbc.HiveDriver",
+            #"d:/Program/hdp-lib/hive-jdbc.jar",
+            identifier.quote="`")
+
+conn <- dbConnect(drv, "jdbc:hive2://hdp/default", "user", "password")
+
+show_databases <- dbGetQuery(conn, "show databases")
+ 
+show_databases
