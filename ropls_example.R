@@ -9,10 +9,10 @@ attach(sacurine)
 ## (1) dataMatrix       --> numeric data; kept original scale, with sample id as the row name & variates id as the col name
 ## (2) sampleMetadata   --> usually categorical type data of the samples are seperated into this data; used for color
 ## (3) variableMetadata  --> used for classification of variates
-## The raw data must be well prepapred (preprocessed) into these three kind of data before opls analysis 
+## The raw data is expected to be preprocessed into these three kinds of format before opls fitting 
 strF(sacurine)
 ## run the 1st try by default.
-## the default argument has below key settings;
+## key settings by default;
 ###   (1) 'x'     ;Given input 'dataMatrix' will be taken as x (Numeric data frame or matrix, NAs are allowed) 
 ###   (2) 'y'     ;Because no 'y' is given, thus will be automatically be treated as 'PCA'
 ###   (3) 'predI' ;When PCA it will perform auto fit by default with max 10 componets and stop at the variance is less than the mean variance of all components.
@@ -92,7 +92,7 @@ i <- 15
 lableX <- colnames(edc_sample_md)
 paste(lableX[i],levels(edc_sample_md[,i]),sep="")
 plot(edc_sample_pca, typeVc = "x-score", parAsColFcVn = edc_sample_md[,lableX[i]], parEllipsesL = TRUE)
-plot(edc_sample_pca, typeVc =   , parAsColFcVn = edc_sample_md[,lableX[i]], parEllipsesL = TRUE)
+#plot(edc_sample_pca, typeVc =   , parAsColFcVn = edc_sample_md[,lableX[i]], parEllipsesL = TRUE)
 
 
 
