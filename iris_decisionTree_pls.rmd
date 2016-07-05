@@ -1,0 +1,71 @@
+---
+title: "Decision Tree"
+author: "QS Chou"
+date: "July 2, 2016"
+output: html_document
+---
+Preparation:
+  required "packages" "rpart", "rpart.plot"
+Demo example: "rpart" ; "iris" data set
+Preparation:
+```{r}
+library(rpart)
+library(rpart.plot)
+attach(iris)
+plot(iris$Species)
+```
+
+Build the 1st model: Use rpart to build the 1st model by using only Petal.Length & Petal.Width
+```{r}
+iris_rpart1 <- rpart(Species~Petal.Length+Petal.Width)
+rpart.plot(iris_rpart1)
+
+```
+
+The plot above will show the classification propability start with the root node; 
+The left side '0.33' in the root node indicates 0.33 probability will be classified into "setosa" with the criterion when the 'Petal.length < 2.5'  
+
+use "table" to validate the predict accuracy
+```{r}
+iris_rpart1_predict <- predict(iris_rpart1,iris[,c(3,4,5)])
+iris_rpart1_predict_class <- apply(iris_rpart1_predict,1,function (one_row) return (colnames(iris_rpart1_predict)[which(one_row == max(one_row))]))
+table(iris_rpart1_predict_class,iris$Species)
+plot(as.data.frame(iris_rpart1_predict_class))
+```
+
+```{r}
+iris_rpart2 <- rpart(Species~Sepal.Length+Sepal.Width)
+rpart.plot(iris_rpart2)
+iris_rpart2_predict <- predict(iris_rpart2,iris[,c(1,2,5)])
+iris_rpart2_predict_class <- apply(iris_rpart2_predict,1,function (one_row) return (colnames(iris_rpart2_predict)[which(one_row == max(one_row))]))
+table(iris_rpart2_predict_class,iris$Species)
+plot(as.data.frame(iris_rpart2_predict_class))
+
+```
+
+```{r}
+iris_rpart3 <- rpart(Species~Sepal.Width+Petal.Width)
+rpart.plot(iris_rpart3)
+iris_rpart3_predict <- predict(iris_rpart3,iris[,c(1,2,5)])
+iris_rpart3_predict_class <- apply(iris_rpart3_predict,1,function (one_row) return (colnames(iris_rpart3_predict)[which(one_row == max(one_row))]))
+table(iris_rpart3_predict_class,iris$Species)
+plot(as.data.frame(iris_rpart3_predict_class))
+```
+
+Entropy package "entropy"
+```{r}
+library(entropy)
+
+
+```
+Use 'ropls' package to find the PC1
+## try http:// if https:// URLs are not supported
+source("https://bioconductor.org/biocLite.R")
+biocLite("ropls")
+
+biocLite("BiocGenerics")
+PCA of iris
+```{r}
+library(ropls)
+iris_pca <- opls(iris[,1:4])
+```
