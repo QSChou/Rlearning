@@ -1,0 +1,9 @@
+## lattice test
+library(lattice)
+library(datasets)
+## simple scatterplot
+xyplot(Ozone~Wind,data=airquality)
+head(airquality,10)
+str(airquality)
+airquality <- transform(airquality, Month = factor(Month),Day = factor(Day))
+xyplot(Ozone~Wind|Month,data=airquality,layout=c(5,1))
