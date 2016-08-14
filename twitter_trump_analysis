@@ -1,0 +1,92 @@
+##refer Twitter http://varianceexplained.org/r/trump-tweets/
+
+library(dplyr)
+library(purrr)
+library(twitteR)
+
+# You'd need to set global options with an authenticated app
+#remove(list = ls())
+#setup_twitter_oauth(getOption("twitter_consumer_key"),
+#                    getOption("twitter_consumer_secret"),
+#                    getOption("twitter_access_token"),
+#                    getOption("twitter_access_token_secret"))
+
+## Create a twitter ap "twitter_qx"  https://apps.twitter.com
+consumer_key <- 'xx'
+consumer_secret <- 'xx'
+access_token <- 'xx'
+access_secret <- 'xx'
+setup_twitter_oauth(consumer_key , consumer_secret, access_token, access_secret)
+
+# We can request only 3200 tweets at a time; it will return fewerdepending on the API
+trump_tweets <- userTimeline("realDonaldTrump", n = 3200)
+trump_tweets_df <- tbl_df(map_df(trump_tweets, as.data.frame))
+
+# if you want to follow along without setting up Twitter authentication,
+# just use my dataset:
+## load(url("http://varianceexplained.org/files/trump_tweets_df.rda"))
+
+library(tidyr)
+
+tweets <- trump_tweets_df %>%
+  select(id, statusSource, text, created) %>%
+  extract(statusSource, "source", "Twitter for (.*?)<") %>%
+  filter(source %in% c("iPhone", "Android"))
+
+library(lubridate)
+library(scales)
+library(ggplot2)
+tweets %>%
+  count(source, hour = hour(with_tz(created, "EST"))) %>%
+  mutate(percent = n / sum(n)) %>%
+  ggplot(aes(hour, percent, color = source)) +
+  geom_line() +
+  scale_y_continuous(labels = percent_format()) +
+  labs(x = "Hour of day (EST)",
+       y = "% of tweets",
+       color = "")
+
+library(stringr)
+library(tidytext)
+
+reg <- "([^A-Za-z\\d#@']|'(?![A-Za-z\\d#@]))"
+tweet_words <- tweets %>%
+  filter(!str_detect(text, '^"')) %>%
+  mutate(text = str_replace_all(text, "https://t.co/[A-Za-z\\d]+|&amp;", "")) %>%
+  unnest_tokens(word, text, token = "regex", pattern = reg) %>%
+  filter(!word %in% stop_words$word,
+         str_detect(word, "[a-z]"))
+
+
+nrc <- sentiments %>%
+  filter(lexicon == "nrc") %>%
+  dplyr::select(word, sentiment)
+
+#nrc
+
+sources <- tweet_words %>%
+  group_by(source) %>%
+  mutate(total_words = n()) %>%
+  ungroup() %>%
+  distinct(id, source, total_words)
+
+by_source_sentiment <- tweet_words %>%
+  inner_join(nrc, by = "word") %>%
+  count(sentiment, id) %>%
+  ungroup() %>%
+  complete(sentiment, id, fill = list(n = 0)) %>%
+  inner_join(sources) %>%
+  group_by(source, sentiment, total_words) %>%
+  summarize(words = sum(n)) %>%
+  ungroup()
+
+
+head(by_source_sentiment)
+
+library(broom)
+
+sentiment_differences <- by_source_sentiment %>%
+  group_by(sentiment) %>%
+  do(tidy(poisson.test(.$words, .$total_words)))
+
+sentiment_differences
