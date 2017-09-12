@@ -1,0 +1,14 @@
+td <- iris
+colnames(td) <- c("x1","x2","x3","x4","y1")
+tdlm <- lm(x4~x1+x2+x3+x1*x2+x2*x3, td)
+for(i in 1:length(coef(tdlm))) {
+  if(i==1) {
+    coef <- coef(tdlm)
+    eqt <- paste0(coef[1])
+  } else {
+    if(coef[i]>0) {
+      oper <- "+"
+    } else { oper <- ""}
+    eqt <- paste0(eqt,oper,coef[i],gsub("[:]","*",names(coef[i])))
+  }
+}
